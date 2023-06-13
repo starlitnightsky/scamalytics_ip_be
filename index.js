@@ -2,7 +2,6 @@ const express = require('express')
 const axios = require('axios')
 const cors = require('cors')
 const app = express()
-const net = require('net')
 
 const bodyParser = require('body-parser')
 const jsonParser = bodyParser.json()
@@ -11,11 +10,21 @@ const PORT = process.env.PORT || 8000
 app.use(jsonParser)
 app.use(cors())
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
+  next()
+})
 const VONAGE_API_KEY = '2b299711'
 const VONAGE_API_SECRET = 's8C8Ykaeq9VfUaLm'
 const IP2LOCATION_API_KEY = 'c27ed90a798749ab9716fd439b18ebe0'
 const SCAMALYTICS_API_KEY =
   '01aac519edb0a33c5f6ee74d7ae168d4338dd4f0b902a416c9bcb318d9d87e33'
+const GOLOGIN_TOKEN =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqd3RpZCI6IjY0ODdjNmM0YjZjMWJjNWFkYTJjMjA3NCIsInR5cGUiOiJ1c2VyIiwic3ViIjoiNjQ4NjVjMTM4YTk0OGQwNDIwNjI0MTU0In0.GyPY43OaO8rWzv1j6enQgiE4sSrymOJARLcPWoKI-uY'
 
 app.post('/verify-phone', async (req, res) => {
   const { phone } = req.body
@@ -83,8 +92,7 @@ app.post('/proxy', async (req, res) => {
     type: 'http',
     username: username,
   }
-  const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqd3RpZCI6IjY0ODZiMjJkZjQxYTcxZWUzZDY2NzZjNCIsInR5cGUiOiJ1c2VyIiwic3ViIjoiNjQ4NjVkNzc3ODEzZTgxNDQ0NmE1NzNjIn0.w3yI4VcqH_1FLDe17w8nTDX3H62k0eM2ya7NiikZFqs'
+  console.log(payload)
   try {
     const response = await axios.post(
       'https://api.gologin.com/browser/check_proxy',
@@ -92,7 +100,7 @@ app.post('/proxy', async (req, res) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + token,
+          Authorization: 'Bearer ' + GOLOGIN_TOKEN,
         },
       }
     )
